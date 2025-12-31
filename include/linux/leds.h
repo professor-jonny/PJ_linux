@@ -300,6 +300,8 @@ struct led_classdev *__must_check devm_of_led_get(struct device *dev,
 struct led_classdev *__must_check devm_of_led_get_optional(struct device *dev,
 						  int index);
 
+struct led_classdev *__must_check fwnode_led_get(struct fwnode_handle *fwnode,
+						  int index);
 /**
  * led_blink_set - set blinking with software fallback
  * @led_cdev: the LED to start blinking

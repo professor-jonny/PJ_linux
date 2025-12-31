@@ -614,3 +614,36 @@ enum led_default_state led_init_default_state_get(struct fwnode_handle *fwnode)
 	return LEDS_DEFSTATE_OFF;
 }
 EXPORT_SYMBOL_GPL(led_init_default_state_get);
+
+struct led_classdev *fwnode_led_get(struct fwnode_handle *fwnode, int index)
+{
+	struct fwnode_handle *led_fwnode;
+	struct led_classdev *led_cdev;
+	int ret;
+
+	if (!fwnode)
+		return ERR_PTR(-EINVAL);
+
+	led_fwnode = fwnode_find_reference(fwnode, "leds", index);
+	if (IS_ERR(led_fwnode)) {
+		ret = PTR_ERR(led_fwnode);
+		return ERR_PTR(ret);
+	}
+
+	down_read(&leds_list_lock);
+	list_for_each_entry(led_cdev, &leds_list, node) {
+		if (led_cdev->dev->fwnode == led_fwnode) {
+			if (!try_module_get(led_cdev->dev->parent->driver->owner)) {
+				led_cdev = ERR_PTR(-ENODEV);
+			}
+			goto out;
+		}
+	}
+	led_cdev = ERR_PTR(-EPROBE_DEFER);
+
+out:
+	up_read(&leds_list_lock);
+	fwnode_handle_put(led_fwnode);
+	return led_cdev;
+}
+EXPORT_SYMBOL_GPL(fwnode_led_get);
