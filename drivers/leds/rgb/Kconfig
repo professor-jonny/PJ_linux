@@ -75,4 +75,16 @@ config LEDS_MT6370_RGB
 	  This driver can also be built as a module. If so, the module
 	  will be called "leds-mt6370-rgb".
 
+config LEDS_GROUP_VIRTUALCOLOR
+	tristate "LEDs group virtualcolor support"
+	depends on OF
+	help
+	  This option enables support for monochrome LEDs that are grouped
+	  into multicolor LEDs which is useful in the case where LEDs of
+	  different colors are physically grouped in a single multi-color LED
+	  and driven by a controller that doesn't have multi-color support.
+
+	  To compile this driver as a module, choose M here: the module
+	  will be called leds-group-virtualcolor.
+
 endif # LEDS_CLASS_MULTICOLOR
